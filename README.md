@@ -65,6 +65,16 @@ public class DocxTest {
     }
 
     /**
+     * 定点续写
+     */
+    @Test
+    public void positionWriteDocx() {
+        new DocxPainter(new File("docx/position-write.docx"))
+                .add(DocxFactory.createParagraph(new DocxText("随便写两句吧")))
+                .save(new File("docx/position-write-result.docx"));
+    }
+
+    /**
      * 准备图片
      *
      * @return {@link DocxImage}
@@ -92,9 +102,10 @@ public class DocxTest {
         // 行（注意：行里的列数要保持一致，样式是 行->列->内容 传递的）
         List<DocxRow> rows = new ArrayList<>();
         DocxRow headRow = new DocxRow(new ArrayList<DocxCell>() {{
-            add(new DocxCell(new DocxText("th1")));
-            add(new DocxCell(new DocxText("th2")));
-            add(new DocxCell(new DocxText("th3")));
+            // 直接使用字符串和 new DocxText()是一样的
+            add(new DocxCell("th1"));
+            add(new DocxCell("th2"));
+            add(new DocxCell("th3"));
             // 给Row设置不一样的样式来表示表头
         }}, DocxStyle.builder().cellColor("C0C0C0").align(JcEnumeration.CENTER).build());
         DocxRow row1 = new DocxRow(new ArrayList<DocxCell>() {{
@@ -130,3 +141,17 @@ public class DocxTest {
 ![image-20220902223338579](README.assets/image-20220902223338579.png)
 
 ![image-20220902223355091](README.assets/image-20220902223355091.png)
+
+`positionWriteDocx`
+
+![image-20220909233637745](README.assets/image-20220909233637745.png)
+
+![image-20220909233701047](README.assets/image-20220909233701047.png)
+
+# 版本更新
+
+## V1.1.0
+- **支持模板定位续写（从word模板的中间部分开始填充）**
+- 增加自定义表格宽度（按比例自适应）
+## V1.0.0
+初始化

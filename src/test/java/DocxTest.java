@@ -86,6 +86,16 @@ public class DocxTest {
     }
 
     /**
+     * 定点续写
+     */
+    @Test
+    public void positionWriteDocx() {
+        new DocxPainter(new File("docx/position-write.docx"))
+                .add(DocxFactory.createParagraph(new DocxText("随便写两句吧")))
+                .save(new File("docx/position-write-result.docx"));
+    }
+
+    /**
      * 准备图片
      *
      * @return {@link DocxImage}
@@ -113,9 +123,11 @@ public class DocxTest {
         // 行（注意：行里的列数要保持一致，样式是 行->列->内容 传递的）
         List<DocxRow> rows = new ArrayList<>();
         DocxRow headRow = new DocxRow(new ArrayList<DocxCell>() {{
-            add(new DocxCell(new DocxText("th1")));
-            add(new DocxCell(new DocxText("th2")));
-            add(new DocxCell(new DocxText("th3")));
+            // 直接使用字符串和 new DocxText()是一样的
+            add(new DocxCell("th1", DocxStyle.builder().cellWidth(1000L).build()));
+            // 宽度仅设置首行才有效，基于比例自适应
+            add(new DocxCell("th2", DocxStyle.builder().cellWidth(2000L).build()));
+            add(new DocxCell("th3", DocxStyle.builder().cellWidth(3000L).build()));
             // 给Row设置不一样的样式来表示表头
         }}, DocxStyle.builder().cellColor("C0C0C0").align(JcEnumeration.CENTER).build());
         DocxRow row1 = new DocxRow(new ArrayList<DocxCell>() {{
@@ -128,7 +140,7 @@ public class DocxTest {
             add(new DocxCell(new DocxText("td1")));
             // 复杂单元格
             List<P> pList = new ArrayList<>();
-            pList.add(DocxFactory.createParagraph(new DocxText("这是一张图片")));
+            pList.add(DocxFactory.createParagraph(new DocxText("这是一张图片且居中")));
             pList.add(DocxFactory.createParagraph(docxImage, docxPainter.getWpk()));
             // 横向合并单元格
             add(new DocxCell(pList, DocxStyle.builder().hMerge(TbMergeEnum.RESTART).align(JcEnumeration.CENTER).build()));

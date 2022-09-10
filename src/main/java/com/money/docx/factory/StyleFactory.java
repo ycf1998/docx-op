@@ -68,6 +68,7 @@ public class StyleFactory {
         if (style != null) {
             TcPr tcPr = Optional.ofNullable(tc.getTcPr()).orElse(factory.createTcPr());
             setCellMargins(tcPr, style.getMargins());
+            setCellWidth(tcPr, style.getCellWidth());
             setCellColor(tcPr, style.getCellColor());
             setCellAlign(tcPr, style.getVAlign());
             setVMerge(tcPr, style.getVMerge());
@@ -115,6 +116,15 @@ public class StyleFactory {
             CTShd shd = new CTShd();
             shd.setFill(color);
             tcPr.setShd(shd);
+        }
+    }
+
+    public static void setCellWidth(TcPr tcPr, Long width) {
+        if (width != null) {
+            TblWidth tw = factory.createTblWidth();
+            tw.setType(TblWidth.TYPE_DXA);
+            tw.setW(BigInteger.valueOf(width));
+            tcPr.setTcW(tw);
         }
     }
 

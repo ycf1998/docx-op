@@ -11,7 +11,11 @@ import org.docx4j.wml.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -110,7 +114,9 @@ public class DocxFactory extends StyleFactory {
         // 创建空表
         int writableWidthTwips = wpk.getDocumentModel().getSections().get(0).getPageDimensions().getWritableWidthTwips();
         Tbl tbl = TblFactory.createTable(docxTable.getRowCount(), docxTable.getColumnCount(), writableWidthTwips / docxTable.getColumnCount());
-        //填充表
+        // 调整列宽比例
+        adjustTableColWidth(tbl, docxTable.getRows().get(0));
+        // 填充表
         for (int i = 0; i < docxTable.getRowCount(); i++) {
             DocxRow docxRow = docxTable.getRows().get(i);
             Tr tr = (Tr) tbl.getContent().get(i);
@@ -143,6 +149,36 @@ public class DocxFactory extends StyleFactory {
             }
         }
         return tbl;
+    }
+
+    /**
+     * 调整表格列宽
+     *
+     * @param firstRow           第一行
+     */
+    private static void adjustTableColWidth(Tbl tbl, DocxRow firstRow) {
+        CTTblLayoutType ctTblLayoutType = factory.createCTTblLayoutType();
+        ctTblLayoutType.setType(STTblLayoutType.FIXED);
+        tbl.getTblPr().setTblLayout(ctTblLayoutType);
+
+        TblGrid tblGrid = tbl.getTblGrid();
+        BigDecimal gridColSum = BigDecimal.valueOf(tblGrid.getGridCol().stream().mapToLong(gc -> gc.getW().longValue()).sum());
+
+        List<DocxCell> cells = firstRow.getCells();
+        List<BigDecimal> cellWidthList = new ArrayList<>(cells.size());
+        cells.forEach(cell -> {
+            if (cell.getStyle() != null && cell.getStyle().getCellWidth() != null) {
+                cellWidthList.add(BigDecimal.valueOf(cell.getStyle().getCellWidth()));
+            } else {
+                cellWidthList.add(BigDecimal.valueOf(1000L));
+            }
+        });
+        BigDecimal sum = BigDecimal.valueOf(cellWidthList.stream().mapToLong(BigDecimal::longValue).sum());
+
+        for (int i = 0; i < cells.size(); i++) {
+            BigDecimal colWidth = cellWidthList.get(i).divide(sum, 3, RoundingMode.HALF_UP).multiply(gridColSum);
+            tblGrid.getGridCol().get(i).setW(colWidth.toBigInteger());
+        }
     }
 
     /**

@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,8 @@ public class DocxPainter {
 
     @Getter
     private final WordprocessingMLPackage wpk;
+
+    private List<Object> secondaryPart;
 
     private TocGenerator tocGenerator;
 
@@ -51,8 +54,25 @@ public class DocxPainter {
     public DocxPainter(File file) {
         try {
             wpk = Docx4J.load(file);
+            this.positionWrite();
         } catch (Exception e) {
             throw new RuntimeException("DocxPainter init failure", e);
+        }
+    }
+
+    private void positionWrite() {
+        List<Object> contents = wpk.getMainDocumentPart().getContent();
+        if (contents.toString().contains("MERGEFIELD slot")) {
+            int position = 0;
+            while (position++ < contents.size()) {
+                if (contents.get(position).toString().contains("MERGEFIELD slot")) {
+                    break;
+                }
+            }
+            List<Object> copyContents = new ArrayList<>(contents);
+            contents.clear();
+            wpk.getMainDocumentPart().getContent().addAll(copyContents.subList(0, position));
+            secondaryPart = copyContents.subList(position + 1, copyContents.size());
         }
     }
 
@@ -108,6 +128,10 @@ public class DocxPainter {
 
     public DocxPainter save(OutputStream out) {
         try {
+            if (secondaryPart != null) {
+                wpk.getMainDocumentPart().getContent().addAll(secondaryPart);
+            }
+            // 刷新目录
             if (this.tocGenerator != null) {
                 this.tocGenerator.updateToc(false);
             }

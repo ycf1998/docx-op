@@ -33,6 +33,11 @@ public class DocxStyle {
     private String cellColor;
 
     /**
+     * 单元格宽度，默认1000，表格会自动按比例自适应
+     */
+    private Long cellWidth;
+
+    /**
      * 垂直对齐
      */
     private STVerticalJc vAlign;
@@ -96,6 +101,9 @@ public class DocxStyle {
         }
         if (style.cellColor != null) {
             this.cellColor = style.cellColor;
+        }
+        if (style.cellWidth != null) {
+            this.cellWidth = style.cellWidth;
         }
         if (style.vAlign != null) {
             this.vAlign = style.vAlign;

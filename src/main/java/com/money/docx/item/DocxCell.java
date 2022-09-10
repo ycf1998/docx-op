@@ -34,6 +34,10 @@ public class DocxCell extends DocxItem {
         this.pList = pList;
     }
 
+    public DocxCell(String text) {
+        this.docxText = new DocxText(text);
+    }
+
     public DocxCell(DocxText docxText) {
         this.docxText = docxText;
     }
@@ -45,6 +49,11 @@ public class DocxCell extends DocxItem {
     public DocxCell(List<P> pList, DocxStyle style) {
         super(style);
         this.pList = pList;
+    }
+
+    public DocxCell(String text, DocxStyle style) {
+        super(style);
+        this.docxText = new DocxText(text);
     }
 
     public DocxCell(DocxText docxText, DocxStyle style) {
