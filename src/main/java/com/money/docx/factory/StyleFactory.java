@@ -174,10 +174,13 @@ public class StyleFactory {
         if (fontFamily != null) {
             RFonts rf = Optional.ofNullable(rPr.getRFonts()).orElse(new RFonts());
             rPr.setRFonts(rf);
+            // 中文
+            rf.setEastAsia(fontFamily);
+            // ASCII
             rf.setAscii(fontFamily);
+            // Unicode
             rf.setHAnsi(fontFamily);
-            rf.setAsciiTheme(null);
-            rf.setHAnsiTheme(null);
+            rf.setCs(fontFamily);
         }
     }
 
