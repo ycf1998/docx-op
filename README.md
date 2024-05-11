@@ -1,6 +1,6 @@
 # docx-op
 
-`docx-op` 是一个用于创建和操作 Word 文档的 Java 库，提供了简单而灵活的 API，可以轻松地生成包含各种内容（如文本、表格、图片等）的 Word 文档。
+`docx-op` 是基于 docx4j 库封装的一个用于创建和操作 Word 文档的 Java 库，提供了简单而灵活的 API，可以轻松地生成包含各种内容（如文本、表格、图片等）的 Word 文档。
 
 Stop talking, show me code. 
 
